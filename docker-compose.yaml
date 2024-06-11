@@ -2,7 +2,6 @@ version: '3'
 
 services:
   api:
-    image: university-rating-system-api:latest
     container_name: urs-api-dev
     build:
       context: ./api/
@@ -10,17 +9,16 @@ services:
         - DEPLOY_ENV=dev
     ports:
       - "8000:8000"
-    volumes:
-      - ./api/src/:/app/src/
     env_file:
       - ./env/dev/api.dev.env
     depends_on:
       - db
+    command: [ "./entrypoint.sh" ]
   db:
-    image: postgres:15.2-alpine
+    image: 'postgres:15'
     container_name: postgres-dev
     volumes:
-      - pg_data:/var/lib/postgres/data/
+      - ./_docker/pgsql:/var/lib/postgres/data/
     env_file:
       - ./env/dev/postgres.dev.env
   pgadmin:
@@ -36,10 +34,9 @@ services:
     image: rabbitmq:3.12.0-management
     container_name: rabbitmq-dev
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
   client:
-    image: university-rating-system-client:latest
     container_name: urs-client-dev
     build:
       context: ./client/
@@ -47,11 +44,6 @@ services:
         - DEPLOY_ENV=dev
     ports:
       - "3000:3000"
-    volumes:
-      - ./client/src/:/app/src/
-      - ./client/public/:/app/public/
     env_file:
       - ./env/dev/client.dev.env
-
-volumes:
-  pg_data:
+    command: [ "/app/entrypoint.sh" ]

@@ -11,7 +11,9 @@ def send_educator_report_to_broker(report: EducatorReport):
     data = bundle_report(report)
 
     with pika.BlockingConnection(
-            pika.ConnectionParameters(host=os.getenv('RABBITMQ_HOST'))
+            pika.ConnectionParameters(
+                host=os.getenv('RABBITMQ_HOST')
+            )
     ) as connection:
         channel = connection.channel()
 

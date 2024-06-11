@@ -19,9 +19,14 @@ FROM base as final
 COPY --from=builder /app/node_modules/ /app/node_modules/
 COPY . ./app/
 
+RUN apk update && apk add --no-cache dos2unix && \
+    find /app/src -type f -exec dos2unix {} \;
+
+RUN sed -i -e 's/\r$//' /app/entrypoint.sh
+
 WORKDIR /app/
 
-RUN chmod +x ./entrypoint.sh
+RUN chmod -R 775 /app/*
 
 RUN addgroup -S app && \
     adduser -S app -G app -h /app -DH
@@ -32,4 +37,6 @@ RUN mkdir .npm/ node_modules/.cache/ && \
 
 USER app
 
-ENTRYPOINT [ "./entrypoint.sh" ]
+RUN ls -la
+
+RUN if [ ! -x /app/entrypoint.sh ]; then exit 1; fi
