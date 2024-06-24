@@ -26,7 +26,7 @@ RUN sed -i -e 's/\r$//' /app/entrypoint.sh
 
 WORKDIR /app/
 
-RUN chmod -R 775 /app/*
+RUN chmod -R 775 /app/entrypoint.sh
 
 RUN addgroup -S app && \
     adduser -S app -G app -h /app -DH
@@ -35,8 +35,8 @@ RUN mkdir .npm/ node_modules/.cache/ && \
     chown app:app -R .npm/ && \
     chown app:app -R node_modules/.cache/
 
-USER app
 
-RUN ls -la
+
+RUN ls -lar
 
 RUN if [ ! -x /app/entrypoint.sh ]; then exit 1; fi
